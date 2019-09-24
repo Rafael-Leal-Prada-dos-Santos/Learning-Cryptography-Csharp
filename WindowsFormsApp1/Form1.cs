@@ -67,7 +67,7 @@ namespace WindowsFormsApp1
 
                     byte[] arquivoAnterior = br.ReadBytes((int)le.Length);
                     char[] textoAnterior = Encoding.UTF8.GetString(arquivoAnterior).ToCharArray();
-                    char[] textoCriptografado = new char[textoAnterior.Length];
+                    long[] textoCriptografado = new long[arquivoAnterior.Length];
 
                     char[] textoChave = txtChave.Text.ToCharArray();
                     long valorChave = 0;
@@ -94,83 +94,47 @@ namespace WindowsFormsApp1
                         { '=', 'G', 'L', 'S', 'y', 'W', '7', '9' }
                     };
 
+                    int c = 0;
+                    int l = 0;
 
                     for (int i = 0; i < textoAnterior.Length;)
                     {
+                        
+                        
 
-                        int l = 0;
-                        int c = i;
-
-                        //if ((c < subBytes.GetLength(0)))
-                        //{
-
-                        //    char valorVetor = subBytes[l, c];
-
-                        //    textoCriptografado[i] = (char)((arquivoAnterior[i] + valorVetor) * (valorChave));
-
-                        //    c++;
-                        //}
-                        //else if (!(l < subBytes.GetLength(1)))
-                        //{
-                        //    c = 0;
-                        //    l = 0;
-                        //}
-                        //else
-                        //{
-                        //    l++;
-                        //    c = 0;
-                        //}
-
-                        while ((c < subBytes.GetLength(0)) && ( i < textoAnterior.Length))
+                        if (!(c < subBytes.GetLength(1)) && (l < subBytes.GetLength(0)))
                         {
-
+                            c = 0;
+                            l++;
+                        }
+                        else if (!(l < subBytes.GetLength(0)))
+                        {
+                            l = 0;
+                            c = 0;
+                        }
+                        else
+                        {
+                            char letraAnterior = textoAnterior[i];
                             char valorVetor = subBytes[l, c];
-
-                            textoCriptografado[i] = (char)(arquivoAnterior[i] + valorVetor + valorChave);
-
+                            long resultado = textoAnterior[i] + valorVetor + valorChave;
+                            textoCriptografado[i] = resultado;
                             c++;
                             i++;
-
-                            if (!(c < subBytes.GetLength(0)) && (l < subBytes.GetLength(1)) ) {
-                                c = 0;
-                                l++;
-                                i++;
-                            }
-                            if (!( l < subBytes.GetLength(1) )){
-                                l = 0;
-                                c = 0;
-                            }
-
-                        }
-
-                                       
+                        }                                          
                          
-                            
                         
-                        
-
-
                     }
 
-                    //Criptografia antiga
-
-                    //for (int i = 0; i < textoCriptografado.Length; i++)
-                    //{
-                    //    for (int v = 0; v < charVetor.Length; v++)
-                    //    {
-
-                    //        for (int k = 0; k < chave.Length; k++)
-                    //        {
-                    //            textoCriptografado[i] = (char)((arquivoAnterior[i] * charVetor[v]) + chave[k]);
-                    //        }
-
-                    //    }
-                    //}
+                   
 
                     FileStream escreve = new FileStream(arqSaida, FileMode.Open);
                     BinaryWriter bw = new BinaryWriter(escreve);
 
-                    bw.Write(textoCriptografado);
+                    for (int i = 0; i < textoCriptografado.Length; i++)
+                    {
+                        bw.Write(textoCriptografado[i]);
+                    }
+                    //bw.Write(textoCriptografado);
 
 
                     MessageBox.Show("Criptografia Bem Sucedida!");
